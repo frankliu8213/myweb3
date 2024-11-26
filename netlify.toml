@@ -1,14 +1,9 @@
 [build]
   command = "npm run build"
-  publish = "out"
+  publish = "build"
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-[build.environment]
-  NEXT_USE_NETLIFY_EDGE = "true"
-  NODE_VERSION = "18"
-  NEXT_TELEMETRY_DISABLED = "1"
+[context.production.environment]
+  REACT_APP_API_URL = "https://api.production.com"
 
 [[redirects]]
   from = "/*"
