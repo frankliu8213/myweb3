@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, Search } from 'lucide-react';
@@ -8,16 +8,29 @@ import { useTranslatedProducts } from '@/lib/products';
 import { Modal } from '@/components/ui/Modal';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useCart } from '@/contexts/CartContext';
 
 export default function ProductsPage() {
+  const [isClient, setIsClient] = useState(false);
   const translatedProducts = useTranslatedProducts();
   const [selectedProduct, setSelectedProduct] = useState<typeof translatedProducts[0] | null>(null);
+  const { t } = useLanguage();
+  const { addToCart } = useCart();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null; // 或者返回一个加载状态
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="text-4xl font-bold mb-8">All Products</h1>
+        <h1 className="text-4xl font-bold mb-8">{t('ourProducts')}</h1>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {translatedProducts.map((product) => (
@@ -43,7 +56,7 @@ export default function ProductsPage() {
                     className="bg-white text-black px-6 py-2 rounded-full flex items-center gap-2 hover:bg-gray-100"
                   >
                     <Search className="w-4 h-4" />
-                    Quick View
+                    {t('quickView')}
                   </button>
                 </div>
               </div>
@@ -54,6 +67,15 @@ export default function ProductsPage() {
                   <span className="text-sm text-gray-600">{product.rating}</span>
                 </div>
                 <p className="font-bold">${product.price}</p>
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addToCart(product, 1);
+                  }}
+                  className="mt-2 bg-black text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-colors"
+                >
+                  {t('addToCart')}
+                </button>
               </div>
             </Link>
           ))}
@@ -78,8 +100,14 @@ export default function ProductsPage() {
             <div className="space-y-2">
               <p className="font-medium">${selectedProduct.price}</p>
               <p className="text-sm text-gray-600">{selectedProduct.description}</p>
-              <button className="w-full py-2 bg-black text-white rounded-full hover:bg-gray-800">
-                Add to Cart
+              <button 
+                onClick={() => {
+                  addToCart(selectedProduct, 1);
+                  setSelectedProduct(null);
+                }}
+                className="w-full py-2 bg-black text-white rounded-full hover:bg-gray-800"
+              >
+                {t('addToCart')}
               </button>
             </div>
           </div>
