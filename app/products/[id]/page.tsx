@@ -5,11 +5,19 @@ import Image from 'next/image';
 import { ChevronLeft, Heart, Minus, Plus, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { getProductById, useTranslatedProducts } from '@/lib/products';
+import { getProductById, useTranslatedProducts, products, featuredProducts } from '@/lib/products';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { useCart } from '@/contexts/CartContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+
+// 添加这个函数来生成静态路径
+export async function generateStaticParams() {
+  const allProducts = [...products, ...featuredProducts];
+  return allProducts.map((product) => ({
+    id: product.id.toString(),
+  }));
+}
 
 export default function ProductDetail() {
   const params = useParams();
